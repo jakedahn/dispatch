@@ -59,6 +59,27 @@ func TestParseAppMetric(t *testing.T) {
 				So(df.Arguments[0].Presence, ShouldEqual, "required")
 			})
 		})
+
+		Convey("to determine if the Dispatch Request is valid", func() {
+			file, err := ioutil.ReadFile("../test/dispatch_test_file.yml")
+			So(err, ShouldBeNil)
+
+			df, err := ParseDispatchFile(file)
+			So(err, ShouldBeNil)
+			So(df.Arguments[0].Key, ShouldEqual, "GOECHO")
+			So(df.Arguments[0].Presence, ShouldEqual, "required")
+
+			arguments := dispatchRequest.Arguments
+			So(arguments[0]["GOECHO"], ShouldEqual, "wheeeeeeee")
+			Convey("with good arguments", func() {
+				So(dispatchRequest.IsValid(df), ShouldBeTrue)
+			})
+			Convey("with bad arguments", func() {
+				delete(arguments[0], "GOECHO")
+				So(arguments[0]["GOECHO"], ShouldEqual, "")
+				So(dispatchRequest.IsValid(df), ShouldBeFalse)
+			})
+		})
 	})
 }
 

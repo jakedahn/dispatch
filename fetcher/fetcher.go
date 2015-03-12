@@ -40,7 +40,6 @@ type DispatchFile struct {
 
 type DispatchfileArgument struct {
 	Key      string
-	Type     string
 	Presence string
 }
 
@@ -125,4 +124,18 @@ func ParseDispatchFile(dispatchFileContent []byte) (*DispatchFile, error) {
 		return nil, err
 	}
 	return df, nil
+}
+
+func (d *DispatchRequest) IsValid(dispatchFile *DispatchFile) bool {
+	dfArgs := dispatchFile.Arguments
+	reqArgs := d.Arguments[0]
+
+	for _, dfarg := range dfArgs {
+		if dfarg.Presence == "required" {
+			if reqArgs[dfarg.Key] == "" {
+				return false
+			}
+		}
+	}
+	return true
 }
