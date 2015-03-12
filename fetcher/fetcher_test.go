@@ -15,6 +15,7 @@
 package fetcher
 
 import (
+	"io/ioutil"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -42,15 +43,10 @@ func TestParseAppMetric(t *testing.T) {
 		}
 
 		Convey("to parse the contents of a Dispatchfile", func() {
-			dfRaw := `
-                build:
-                  - CGO_ENABLED=0 go build -o ./bin/echo -a main.go
-                  - docker build .
+			file, err := ioutil.ReadFile("../test/dispatch_test_file.yml")
+			So(err, ShouldBeNil)
 
-                arguments:
-                  - {key: GOECHO, type: string, presence: required}`
-
-			df, err := ParseDispatchFile([]byte(dfRaw))
+			df, err := ParseDispatchFile(file)
 			So(err, ShouldBeNil)
 
 			Convey("specifically the build steps", func() {
@@ -60,7 +56,6 @@ func TestParseAppMetric(t *testing.T) {
 
 			Convey("specifically the arguments", func() {
 				So(df.Arguments[0].Key, ShouldEqual, "GOECHO")
-				So(df.Arguments[0].Type, ShouldEqual, "string")
 				So(df.Arguments[0].Presence, ShouldEqual, "required")
 			})
 		})
