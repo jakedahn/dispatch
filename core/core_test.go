@@ -21,7 +21,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestParseAppMetric(t *testing.T) {
+func TestDispatchRequest(t *testing.T) {
 
 	Convey("Given a valid Dispatch Request, the Fetcher should be able", t, func() {
 
