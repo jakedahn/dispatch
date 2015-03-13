@@ -12,19 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package builder
+package core
 
-import (
-	"testing"
+import git "gopkg.in/libgit2/git2go.v22"
 
-	. "github.com/smartystreets/goconvey/convey"
-)
+type Repo struct {
+	Name         string
+	GitUrl       string
+	GitRef       string
+	GitRepo      *git.Repository
+	CheckoutPath string
+}
 
-func TestParseAppMetric(t *testing.T) {
+type DispatchFile struct {
+	BuildSteps []string               `yaml:"build"`
+	Arguments  []DispatchfileArgument `yaml:"arguments"`
+}
 
-	Convey("Given a set of valid arguments from a Dispatch request, builder should be able", t, func() {
+type DispatchfileArgument struct {
+	Key      string
+	Presence string
+}
 
-		Convey("to execute the build steps in order from top to bottom", nil)
-
-	})
+type DispatchRequest struct {
+	GitUrl    string              `json:"repo_url"`
+	GitRef    string              `json:"ref"`
+	Arguments []map[string]string `json:"arguments"`
 }

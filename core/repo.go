@@ -12,42 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fetcher
+package core
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"strings"
 
 	git "gopkg.in/libgit2/git2go.v22"
-	yaml "gopkg.in/yaml.v2"
 )
-
-type Repo struct {
-	Name         string
-	GitUrl       string
-	GitRef       string
-	GitRepo      *git.Repository
-	CheckoutPath string
-}
-
-type DispatchFile struct {
-	BuildSteps []string               `yaml:"build"`
-	Arguments  []DispatchfileArgument `yaml:"arguments"`
-}
-
-type DispatchfileArgument struct {
-	Key      string
-	Presence string
-}
-
-type DispatchRequest struct {
-	GitUrl    string              `json:"repo_url"`
-	GitRef    string              `json:"ref"`
-	Arguments []map[string]string `json:"arguments"`
-}
 
 func NewRepo(gitUrl, gitRef string) *Repo {
 	repoUrlParts := strings.Split(gitUrl, "/")
@@ -106,36 +80,4 @@ func (r *Repo) Checkout() error {
 	}
 
 	return nil
-}
-
-func NewDispatchRequest(requestJson []byte) (*DispatchRequest, error) {
-	dispatchRequest := &DispatchRequest{}
-	err := json.Unmarshal(requestJson, dispatchRequest)
-	if err != nil {
-		return nil, err
-	}
-	return dispatchRequest, nil
-}
-
-func ParseDispatchFile(dispatchFileContent []byte) (*DispatchFile, error) {
-	df := &DispatchFile{}
-	err := yaml.Unmarshal(dispatchFileContent, df)
-	if err != nil {
-		return nil, err
-	}
-	return df, nil
-}
-
-func (d *DispatchRequest) IsValid(dispatchFile *DispatchFile) bool {
-	dfArgs := dispatchFile.Arguments
-	reqArgs := d.Arguments[0]
-
-	for _, dfarg := range dfArgs {
-		if dfarg.Presence == "required" {
-			if reqArgs[dfarg.Key] == "" {
-				return false
-			}
-		}
-	}
-	return true
 }

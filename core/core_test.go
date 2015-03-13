@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fetcher
+package core
 
 import (
 	"io/ioutil"
@@ -49,9 +49,12 @@ func TestParseAppMetric(t *testing.T) {
 			df, err := ParseDispatchFile(file)
 			So(err, ShouldBeNil)
 
-			Convey("specifically the build steps", func() {
+			Convey("the build steps should be in order from top to bottom", func() {
 				So(df.BuildSteps[0], ShouldEqual, "CGO_ENABLED=0 go build -o ./bin/echo -a main.go")
 				So(df.BuildSteps[1], ShouldEqual, "docker build .")
+				So(df.BuildSteps[2], ShouldEqual, "echo \"step3\"")
+				So(df.BuildSteps[3], ShouldEqual, "echo \"step4\"")
+				So(df.BuildSteps[4], ShouldEqual, "echo \"step5\"")
 			})
 
 			Convey("specifically the arguments", func() {
@@ -81,6 +84,7 @@ func TestParseAppMetric(t *testing.T) {
 			})
 		})
 	})
+
 }
 
 func TestDispatchFetcherIntegration(t *testing.T) {

@@ -1,6 +1,9 @@
 build:
   - CGO_ENABLED=0 go build -o ./bin/echo -a main.go
   - docker build .
+  - echo "step3"
+  - echo "step4"
+  - echo "step5"
 
 arguments:
   - {key: GOECHO, presence: required}
